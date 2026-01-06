@@ -96,13 +96,15 @@ export const getResumeReviewByOpenAi = async (
   const inputMessage = await prompt.format({ resume: resumeText });
 
   const model = new ChatOpenAI({
-    modelName: aImodel,
+    modelName: aImodel || process.env.OPENAI_DEFAULT_MODEL,
     openAIApiKey: process.env.OPENAI_API_KEY,
+    configuration: process.env.OPENAI_BASE_URL
+      ? { baseURL: process.env.OPENAI_BASE_URL }
+      : undefined,
     temperature: 0,
     maxConcurrency: 1,
     maxTokens: 3000,
   });
-
   const stream = await model
     .pipe(new StringOutputParser())
     .stream(inputMessage);
@@ -280,8 +282,11 @@ export const getJobMatchByOpenAi = async (
     job_description: jobText,
   });
   const model = new ChatOpenAI({
-    model: aiModel,
+    model: aiModel || process.env.OPENAI_DEFAULT_MODEL,
     openAIApiKey: process.env.OPENAI_API_KEY,
+    configuration: process.env.OPENAI_BASE_URL
+      ? { baseURL: process.env.OPENAI_BASE_URL }
+      : undefined,
     temperature: 0,
     maxConcurrency: 1,
     maxTokens: 3000,
